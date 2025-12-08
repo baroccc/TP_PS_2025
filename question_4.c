@@ -2,7 +2,7 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <stdlib.h>
-#include "question_2.h"
+#include "question_4.h"
 
 /*
  * Writes the initial welcome message to stdout.
@@ -31,25 +31,23 @@ void exit_shell() {
  * 2. Child process replaces itself with the command using execlp.
  * 3. Parent process waits for the child to finish to prevent zombie processes.
  */
-void execute_command(char *command) {
+int execute_command(char *command) {
     pid_t pid;
     int status;
 
     pid = fork();
-
     if (pid == -1) {
-        write(STDERR_FILENO, ERR_FORK, strlen(ERR_FORK));
-        return;
+        // Fork failed
+        return -1;
     }
-
     if (pid == 0) {
-        // === Child Process ===
+        // Child process 
         execlp(command, command, (char *)NULL);
 
-        write(STDERR_FILENO, ERR_CMD, strlen(ERR_CMD));
         exit(EXIT_FAILURE); 
     } else {
-        // === Parent Process ===
-        wait(&status);
+        // Parent process 
+        waitpid(pid, &status, 0);
+        return status;
     }
 }
