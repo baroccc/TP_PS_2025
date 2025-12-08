@@ -1,10 +1,17 @@
+// question_1.h
+// Header file containing constants for Question 1
 #ifndef QUESTION_1_H
 #define QUESTION_1_H
 
-void display_welcome_prompt();
-void display_regular_prompt();
+#include <unistd.h> 
 
-#define WELCOME_PROMPT "Hello, welcome to ENSEA shell :)\n"
-#define REGULAR_PROMPT "enseash % "
+// Constants definition
+#define WELCOME_MSG "Welcome to ENSEA Tiny Shell.\nType 'exit' to quit.\n"
+#define PROMPT "enseash % "
+#define BUF_SIZE_Q1 10
+
+// Function prototypes
+void display_welcome_msg(void);
+void display_prompt(void);
 
 #endif
