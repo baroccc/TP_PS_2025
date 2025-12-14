@@ -2,14 +2,17 @@
 #include <string.h>
 #include <sys/wait.h> 
 #include <stdio.h>    
+#include <time.h>
 #include <stdlib.h>   
-#include "question_4.h"
+#include "question_5.h"
 
 int main(void) {
+    // Buffers for user input and formatted prompt
     char buffer[MAX_BUFFER_SIZE];
-    
     ssize_t bytes_read;
+    
     int status = 0;             // Stores the return status of the child process
+    long execution_time = 0;    // Variable to store the duration in milliseconds
     int command_has_run = 0;    // Flag to track if a command has been executed
     char prompt_buffer[PROMPT_BUFFER_SIZE]; // Buffer for the dynamic prompt
 
@@ -18,26 +21,25 @@ int main(void) {
     while (1) {
         // --- Display Prompt Logic ---
         if (command_has_run == 0) {
+
             // Display the basic prompt for the first iteration
             write(STDOUT_FILENO, PROMPT_BASE, strlen(PROMPT_BASE));
         } else {
 
-
-            // Display the prompt with the previous command's status
+            // Display the prompt with the previous command's status AND execution time
             if (WIFEXITED(status)) {
-                
+
                 // The process exited normally
                 int exit_code = WEXITSTATUS(status);
-                sprintf(prompt_buffer, PROMPT_EXIT_FMT, exit_code);
+                sprintf(prompt_buffer, PROMPT_EXIT_FMT, exit_code, execution_time);
                 write(STDOUT_FILENO, prompt_buffer, strlen(prompt_buffer));
             } else if (WIFSIGNALED(status)) {
-
+                
                 // The process was terminated by a signal
                 int sig_num = WTERMSIG(status);
-                sprintf(prompt_buffer, PROMPT_SIGN_FMT, sig_num);
+                sprintf(prompt_buffer, PROMPT_SIGN_FMT, sig_num, execution_time);
                 write(STDOUT_FILENO, prompt_buffer, strlen(prompt_buffer));
             } else {
-
                 write(STDOUT_FILENO, PROMPT_BASE, strlen(PROMPT_BASE));
             }
         }
@@ -63,9 +65,8 @@ int main(void) {
             break;
         }
 
-        // execute_command must return the status from waitpid()
-        // We capture it here to update the prompt in the next iteration
-        status = execute_command(buffer);
+        // Pass the address of execution_time to measure command duration
+        status = execute_command(buffer, &execution_time);
         
         // Mark that we have run at least one command
         command_has_run = 1;
