@@ -4,7 +4,7 @@
 #include <stdio.h>    
 #include <time.h>
 #include <stdlib.h>   
-#include "question_6.h"
+#include "question_7.h"
 
 int main(void) {
     // Buffers for user input and formatted prompt
