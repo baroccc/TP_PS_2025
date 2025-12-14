@@ -4,7 +4,7 @@
 #include <stdio.h>    
 #include <time.h>
 #include <stdlib.h>   
-#include "question_5.h"
+#include "question_6.h"
 
 int main(void) {
     // Buffers for user input and formatted prompt
@@ -34,7 +34,7 @@ int main(void) {
                 sprintf(prompt_buffer, PROMPT_EXIT_FMT, exit_code, execution_time);
                 write(STDOUT_FILENO, prompt_buffer, strlen(prompt_buffer));
             } else if (WIFSIGNALED(status)) {
-                
+
                 // The process was terminated by a signal
                 int sig_num = WTERMSIG(status);
                 sprintf(prompt_buffer, PROMPT_SIGN_FMT, sig_num, execution_time);
