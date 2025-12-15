@@ -18,12 +18,12 @@ void exit_shell() {
     exit(0);
 }
 
-// Helper function to handle redirections (<, >) for a single process (from Q7)
+// Helper function to handle redirections (<, >) for a single process
 void handle_redirections(char **argv) {
     for (int j = 0; argv[j] != NULL; j++) {
         if (strcmp(argv[j], ">") == 0) {
             char *filename = argv[j+1];
-            if (filename == NULL) { fprintf(stderr, "Missing file for >\n"); exit(EXIT_FAILURE); }
+            if (filename == NULL) { write(STDERR_FILENO, MISSING_FILE_MESSAGE1, strlen(MISSING_FILE_MESSAGE1)); exit(EXIT_FAILURE); }
             int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
             if (fd == -1) { perror("open >"); exit(EXIT_FAILURE); }
             dup2(fd, STDOUT_FILENO);
@@ -31,7 +31,7 @@ void handle_redirections(char **argv) {
             argv[j] = NULL; // Truncate args
         } else if (strcmp(argv[j], "<") == 0) {
             char *filename = argv[j+1];
-            if (filename == NULL) { fprintf(stderr, "Missing file for <\n"); exit(EXIT_FAILURE); }
+            if (filename == NULL) { write(STDERR_FILENO, MISSING_FILE_MESSAGE2, strlen(MISSING_FILE_MESSAGE2)); exit(EXIT_FAILURE); }
             int fd = open(filename, O_RDONLY);
             if (fd == -1) { perror("open <"); exit(EXIT_FAILURE); }
             dup2(fd, STDIN_FILENO);
@@ -50,7 +50,7 @@ int execute_command(char *command, long *execution_time) {
     // Start timer
     clock_gettime(CLOCK_MONOTONIC, &start);
 
-    // 1. Parse tokens
+    // Parse tokens
     argv[i] = strtok(command, " \t");
     while (argv[i] != NULL && i < MAX_ARGS - 1) {
         i++;
@@ -60,7 +60,7 @@ int execute_command(char *command, long *execution_time) {
 
     if (argv[0] == NULL) return 0; // Empty command
 
-    // 2. Check for Pipe (|)
+    // Check for Pipe (|)
     int pipe_idx = -1;
     for (int j = 0; argv[j] != NULL; j++) {
         if (strcmp(argv[j], "|") == 0) {
@@ -69,7 +69,7 @@ int execute_command(char *command, long *execution_time) {
         }
     }
 
-    // --- PIPELINE LOGIC (Q8) ---
+    // --- PIPELINE LOGIC ---
     if (pipe_idx != -1) {
         int pipefd[2];
         if (pipe(pipefd) == -1) {
@@ -110,7 +110,7 @@ int execute_command(char *command, long *execution_time) {
         waitpid(pid1, &status1, 0);
         waitpid(pid2, &status, 0); 
     } 
-    // --- SINGLE COMMAND LOGIC (Fallback to Q7) ---
+    // --- SINGLE COMMAND LOGIC ---
     else {
         pid_t pid = fork();
         if (pid == -1) { perror("fork"); return -1; }

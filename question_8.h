@@ -8,12 +8,13 @@
 #define EXIT_CMD "exit"
 
 #define WELCOME_MSG "Welcome to ENSEA Tiny Shell.\nType 'exit' to quit.\n"
-#define PROMPT_MSG "enseash % "
+#define PROMPT_BASE_MSG "enseash % "
 #define BYE_MSG "Bye bye...\n"
 #define ERR_READ "Error: Read failed\n"
+#define MISSING_FILE_MESSAGE1 "Missing file for >\n"
+#define MISSING_FILE_MESSAGE2 "Missing file for <\n"
 
 #define PROMPT_BUFFER_SIZE 128
-#define PROMPT_BASE "enseash % "
 #define PROMPT_EXIT_FMT "enseash [exit:%d|%ldms] %% "
 #define PROMPT_SIGN_FMT "enseash [sign:%d|%ldms] %% "
 

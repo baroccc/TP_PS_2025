@@ -10,19 +10,16 @@
 #include "question_7.h"
 
 
-/*
- * Writes the initial welcome message to stdout.
- * Uses strlen to avoid hardcoding the message length (magic number).
- */
+//Writes the initial welcome message to stdout.
+
 void display_welcome_message() {
     write(STDOUT_FILENO, WELCOME_MSG, strlen(WELCOME_MSG));
 }
 
-/*
- * Writes the standard prompt to stdout to indicate readiness.
- */
+//Writes the standard prompt to stdout to indicate readiness.
+
 void display_prompt() {
-    write(STDOUT_FILENO, PROMPT_MSG, strlen(PROMPT_MSG));
+    write(STDOUT_FILENO, PROMPT_BASE_MSG, strlen(PROMPT_BASE_MSG));
 }
 
 //Displays a goodbye message before exiting the loop.
@@ -31,12 +28,7 @@ void exit_shell() {
     write(STDOUT_FILENO, BYE_MSG, strlen(BYE_MSG));
 }
 
-/*
- * Manages the execution of a command.
- * 1. Forks the current process.
- * 2. Child process replaces itself with the command using execlp.
- * 3. Parent process waits for the child to finish to prevent zombie processes.
- */
+
 // Modified function signature to accept a pointer for the time
 int execute_command(char *command, long *execution_time) {
     pid_t pid;
@@ -46,7 +38,7 @@ int execute_command(char *command, long *execution_time) {
     char *argv[MAX_ARGS]; 
     int i = 0;
 
-    // 1. Start the clock
+    // Start the clock
     clock_gettime(CLOCK_MONOTONIC, &start);
 
     pid = fork();
@@ -57,7 +49,7 @@ int execute_command(char *command, long *execution_time) {
     if (pid == 0) {
         // --- CHILD PROCESS ---
 
-        // A. Tokenize the command string
+        // Tokenize the command string
         argv[i] = strtok(command, " \t");
         while (argv[i] != NULL && i < MAX_ARGS - 1) {
             i++;
@@ -69,20 +61,18 @@ int execute_command(char *command, long *execution_time) {
             exit(EXIT_SUCCESS);
         }
 
-        // B. Scan for Redirections (< or >)
-        // We iterate through the parsed arguments (up to 'i')
+        // Scan for Redirections (< or >)
         for (int j = 0; argv[j] != NULL; j++) {
             
             // Check for Output Redirection (>)
             if (strcmp(argv[j], ">") == 0) {
                 char *filename = argv[j+1]; // The file comes right after '>'
                 if (filename == NULL) {
-                    fprintf(stderr, "Syntax error: expected file after >\n");
+                     write(STDERR_FILENO, MISSING_FILE_MESSAGE1, strlen(MISSING_FILE_MESSAGE1));
                     exit(EXIT_FAILURE);
                 }
 
                 // Open file: Write Only | Create if missing | Truncate if exists
-                // Permissions: rw-r--r-- (User read/write, Group read, Others read)
                 int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
                 if (fd == -1) {
                     perror("open");
@@ -101,7 +91,7 @@ int execute_command(char *command, long *execution_time) {
             else if (strcmp(argv[j], "<") == 0) {
                 char *filename = argv[j+1];
                 if (filename == NULL) {
-                    fprintf(stderr, "Syntax error: expected file after <\n");
+                    write(STDERR_FILENO, MISSING_FILE_MESSAGE2, strlen(MISSING_FILE_MESSAGE2));
                     exit(EXIT_FAILURE);
                 }
 
@@ -121,7 +111,7 @@ int execute_command(char *command, long *execution_time) {
             }
         }
 
-        // C. Execute
+        // Execute
         execvp(argv[0], argv);
         
         perror("execvp"); 
@@ -130,10 +120,10 @@ int execute_command(char *command, long *execution_time) {
         // --- PARENT PROCESS ---
         waitpid(pid, &status, 0);
 
-        // 2. Stop the clock
+        // Stop the clock
         clock_gettime(CLOCK_MONOTONIC, &end);
 
-        // 3. Calculate time
+        // Calculate time
         long seconds = end.tv_sec - start.tv_sec;
         long nanoseconds = end.tv_nsec - start.tv_nsec;
         *execution_time = (seconds * MILISECONDS_PER_SECONDS) + (nanoseconds / NANOSECONDS_PER_MILISECONDS);

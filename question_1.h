@@ -1,5 +1,3 @@
-// question_1.h
-// Header file containing constants for Question 1
 #ifndef QUESTION_1_H
 #define QUESTION_1_H
 

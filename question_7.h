@@ -9,7 +9,7 @@
 
 // System Messages
 #define WELCOME_MSG "Welcome to ENSEA Tiny Shell.\nType 'exit' to quit.\n"
-#define PROMPT_MSG "enseash % "
+#define PROMPT_BASE_MSG "enseash % "
 #define BYE_MSG "Bye bye...\n"
 #define ERR_FORK "Error: Fork failed\n"
 #define ERR_CMD "Command not found\n"
@@ -17,9 +17,10 @@
 #define PREVIOUS_CMD "a_program"
 
 #define PROMPT_BUFFER_SIZE 128
-#define PROMPT_BASE "enseash % "
 #define PROMPT_EXIT_FMT "enseash [exit:%d|%ldms] %% "
 #define PROMPT_SIGN_FMT "enseash [sign:%d|%ldms] %% "
+#define MISSING_FILE_MESSAGE1 "Missing file for >\n"
+#define MISSING_FILE_MESSAGE2 "Missing file for <\n"
 
 #define MILISECONDS_PER_SECONDS  1000      
 #define NANOSECONDS_PER_MILISECONDS   1000000

@@ -4,7 +4,7 @@
 #include <stdio.h>    
 #include <time.h>
 #include <stdlib.h>   
-#include "question_7.h"
+#include "question_8.h"
 
 int main(void) {
     // Buffers for user input and formatted prompt
@@ -23,7 +23,7 @@ int main(void) {
         if (command_has_run == 0) {
 
             // Display the basic prompt for the first iteration
-            write(STDOUT_FILENO, PROMPT_BASE, strlen(PROMPT_BASE));
+            write(STDOUT_FILENO, PROMPT_BASE_MSG, strlen(PROMPT_BASE_MSG));
         } else {
 
             // Display the prompt with the previous command's status AND execution time
@@ -40,7 +40,7 @@ int main(void) {
                 sprintf(prompt_buffer, PROMPT_SIGN_FMT, sig_num, execution_time);
                 write(STDOUT_FILENO, prompt_buffer, strlen(prompt_buffer));
             } else {
-                write(STDOUT_FILENO, PROMPT_BASE, strlen(PROMPT_BASE));
+                write(STDOUT_FILENO, PROMPT_BASE_MSG, strlen(PROMPT_BASE_MSG));
             }
         }
         // ---------------------------

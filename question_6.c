@@ -8,19 +8,14 @@
 #include "question_6.h"
 
 
-/*
- * Writes the initial welcome message to stdout.
- * Uses strlen to avoid hardcoding the message length (magic number).
- */
+//Writes the initial welcome message to stdout.
 void display_welcome_message() {
     write(STDOUT_FILENO, WELCOME_MSG, strlen(WELCOME_MSG));
 }
 
-/*
- * Writes the standard prompt to stdout to indicate readiness.
- */
+//Writes the standard prompt to stdout to indicate readiness.
 void display_prompt() {
-    write(STDOUT_FILENO, PROMPT_MSG, strlen(PROMPT_MSG));
+    write(STDOUT_FILENO, PROMPT_BASE_MSG, strlen(PROMPT_BASE_MSG));
 }
 
 //Displays a goodbye message before exiting the loop.
@@ -29,12 +24,6 @@ void exit_shell() {
     write(STDOUT_FILENO, BYE_MSG, strlen(BYE_MSG));
 }
 
-/*
- * Manages the execution of a command.
- * 1. Forks the current process.
- * 2. Child process replaces itself with the command using execlp.
- * 3. Parent process waits for the child to finish to prevent zombie processes.
- */
 // Modified function signature to accept a pointer for the time
 int execute_command(char *command, long *execution_time) {
     pid_t pid;
@@ -45,7 +34,7 @@ int execute_command(char *command, long *execution_time) {
     char *argv[MAX_ARGS]; 
     int i = 0;
 
-    // 1. Start the clock
+    // Start the clock
     clock_gettime(CLOCK_MONOTONIC, &start);
 
     pid = fork();
@@ -58,7 +47,6 @@ int execute_command(char *command, long *execution_time) {
         // --- CHILD PROCESS ---
         
         // Tokenize the command string (split by space and tab)
-        // This modifies 'command' in place
         argv[i] = strtok(command, " \t");
         
         while (argv[i] != NULL && i < MAX_ARGS - 1) {
@@ -83,10 +71,10 @@ int execute_command(char *command, long *execution_time) {
         // --- PARENT PROCESS ---
         waitpid(pid, &status, 0);
 
-        // 2. Stop the clock
+        // Stop the clock
         clock_gettime(CLOCK_MONOTONIC, &end);
 
-        // 3. Calculate time in milliseconds
+        // Calculate time in milliseconds
         long seconds = end.tv_sec - start.tv_sec;
         long nanoseconds = end.tv_nsec - start.tv_nsec;
         *execution_time = (seconds * MILISECONDS_PER_SECONDS) + (nanoseconds / NANOSECONDS_PER_MILISECONDS);
