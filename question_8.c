@@ -84,6 +84,9 @@ int execute_command(char *command, long *execution_time) {
         // Child 1 (Writer)
         pid_t pid1 = fork();
         if (pid1 == 0) {
+
+            handle_redirections(argv); 
+
             dup2(pipefd[1], STDOUT_FILENO); // Redirect stdout to pipe write
             close(pipefd[0]); // Close unused read end
             close(pipefd[1]); // Close original write end
@@ -97,6 +100,9 @@ int execute_command(char *command, long *execution_time) {
             dup2(pipefd[0], STDIN_FILENO); // Redirect stdin to pipe read
             close(pipefd[1]); // Close unused write end
             close(pipefd[0]); // Close original read end
+            
+            handle_redirections(argv2); 
+
             execvp(argv2[0], argv2);
             perror("execvp child2"); exit(EXIT_FAILURE);
         }
